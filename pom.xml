@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>de.uni_leipzig.asv</groupId>
+	<artifactId>clarin.webservices.pidservices2</artifactId>
+	<version>2.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>clarin.webservices.pidservices2</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.jayway.jsonpath</groupId>
+			<artifactId>json-path</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-apache-client</artifactId>
+			<version>1.18</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<show>private</show>
+					<nohelp>true</nohelp>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>RepositoryProxy</name>
+			<url>http://clarindevel.informatik.uni-leipzig.de:8080/nexus-2.5.1/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<name>SnapshotRepositoryProxy</name>
+			<url>http://clarindevel.informatik.uni-leipzig.de:8080/nexus-2.5.1/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:git:ssh://git@clarindevel.informatik.uni-leipzig.de:/~/${project.groupId}.${project.artifactId}.git</connection>
+		<url>scm:git:ssh://git@clarindevel.informatik.uni-leipzig.de:/~/${project.groupId}.${project.artifactId}.git</url>
+		<developerConnection>scm:git:ssh://git@clarindevel.informatik.uni-leipzig.de:/~/${project.groupId}.${project.artifactId}.git</developerConnection>
+		<tag>v1.3</tag>
+	</scm>
+</project>
