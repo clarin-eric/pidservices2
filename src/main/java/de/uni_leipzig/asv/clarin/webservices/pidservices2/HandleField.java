@@ -7,5 +7,5 @@ package de.uni_leipzig.asv.clarin.webservices.pidservices2;
  * 
  */
 public enum HandleField {
-	TITLE, AUTHORS, PUBDATE, EXPDATE, URL, METADATA_URL, CREATOR
+	AUTHORS, CREATOR, EXPDATE, INST, METADATA_URL, PUBDATE, TITLE, URL
 }
