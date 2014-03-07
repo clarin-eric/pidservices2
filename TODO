@@ -1,0 +1,1 @@
+HORRIBLE implementation to get newly created PID in PidWriterImpl.registerNewPID() -> Fix ASAP, when GWDG respects accept header

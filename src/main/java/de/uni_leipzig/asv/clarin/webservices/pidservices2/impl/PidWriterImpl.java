@@ -1,8 +1,9 @@
 package de.uni_leipzig.asv.clarin.webservices.pidservices2.impl;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -27,34 +28,37 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
  */
 public class PidWriterImpl implements PidWriter {
 	private final static Logger LOG = Logger.getLogger(PidWriterImpl.class);
+	private static final Pattern PID_OUTPUT_PATTERN = Pattern.compile(".*location</dt><dd><a href=\"([0-9A-Z-]+)\">.*");
 
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws HttpException {
-		LOG.info("Try to create handle at " + configuration.getServiceBaseURL() + " with values: " + fieldMap);
+		LOG.debug("Try to create handle at " + configuration.getServiceBaseURL() + " with values: " + fieldMap);
 
-		try {
-			final Client client = Client.create();
-			client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
-			final WebResource webResource = client.resource(configuration.getServiceBaseURL()
-					+ configuration.getHandlePrefix());
+		final Client client = Client.create();
+		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
+		final WebResource webResource = client.resource(configuration.getServiceBaseURL()
+				+ configuration.getHandlePrefix());
 
-			JSONArray jsonArray = createJSONArray(fieldMap);
+		JSONArray jsonArray = createJSONArray(fieldMap);
 
-			final ClientResponse response = webResource.accept("application/json").type("application/json")
-					.post(ClientResponse.class, jsonArray.toString());
-			if (response.getStatus() != 201) {
-				throw new HttpException("" + response.getStatus());
-			}
+		final ClientResponse response = webResource.accept("application/json").type("application/json")
+				.post(ClientResponse.class, jsonArray.toString());
+		if (response.getStatus() != 201) {
+			throw new HttpException("" + response.getStatus());
+		}
 
-			// TODO extract new Handle
-			return response.getEntity(String.class);
-		} catch (final NullPointerException npe) {
-			return null;
+		// TODO CHANGE this ASAP, when GWDG respects accept header
+		String responseString = response.getEntity(String.class).trim().replaceAll("\n", "");
+		Matcher matcher = PID_OUTPUT_PATTERN.matcher(responseString);
+		if (matcher.matches())
+			return configuration.getHandlePrefix() + "/" + matcher.group(1);
+		else {
+			throw new RuntimeException("Unparsable response from " + configuration.getServiceBaseURL());
 		}
 	}
 
 	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap) {
-		LOG.info("Try to modify handle \"" + pid + "\" at " + configuration.getServiceBaseURL() + " with new values: "
+		LOG.debug("Try to modify handle \"" + pid + "\" at " + configuration.getServiceBaseURL() + " with new values: "
 				+ fieldMap);
 
 		final Client client = Client.create();
@@ -62,7 +66,6 @@ public class PidWriterImpl implements PidWriter {
 		final WebResource webResource = client.resource(configuration.getServiceBaseURL() + pid);
 
 		JSONArray jsonArray = createJSONArray(fieldMap);
-		System.out.println(jsonArray.toString());
 		webResource.accept("application/json").type("application/json").put(ClientResponse.class, jsonArray.toString());
 	}
 
@@ -87,18 +90,5 @@ public class PidWriterImpl implements PidWriter {
 		}
 
 		return jsonArray;
-	}
-
-	public static void main(String[] args) throws HttpException {
-		PidWriterImpl writer = new PidWriterImpl();
-		Map<HandleField, String> handleFieldMap = new HashMap<HandleField, String>();
-		handleFieldMap.put(HandleField.URL, "http://asv.informatik.uni-leipzig.de");
-		handleFieldMap.put(HandleField.TITLE, "Test Title");
-		handleFieldMap.put(HandleField.AUTHORS, "Thomas Eckart");
-		// String newHandle = writer.registerNewPID(Configuration.getInstance(), handleFieldMap);
-		// System.out.println(newHandle);
-
-		String pid = "11022/0000-0000-1F9F-C";
-		writer.modifyPid(Configuration.getInstance(), pid, handleFieldMap);
 	}
 }
