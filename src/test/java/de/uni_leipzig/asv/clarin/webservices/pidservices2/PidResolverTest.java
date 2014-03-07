@@ -18,8 +18,15 @@ public class PidResolverTest extends TestCase {
 		assertTrue(pidObject.getValue(HandleField.URL).equals(url));
 	}
 
-	public void testSearching() throws IOException {
-		PidResolverImpl resolver = new PidResolverImpl();
+	public void testSearchingList() throws IOException {
+		PidResolver resolver = new PidResolverImpl();
+		Map<HandleField, String> handleFieldMap = new HashMap<HandleField, String>();
+		handleFieldMap.put(HandleField.URL, url);
+		assertTrue(resolver.searchPidAsList(Configuration.getInstance(), handleFieldMap).size() > 0);
+	}
+
+	public void testSearchingJSON() throws IOException {
+		PidResolver resolver = new PidResolverImpl();
 		Map<HandleField, String> handleFieldMap = new HashMap<HandleField, String>();
 		handleFieldMap.put(HandleField.URL, url);
 		assertTrue(resolver.searchPidAsJSON(Configuration.getInstance(), handleFieldMap).keySet().size() > 0);

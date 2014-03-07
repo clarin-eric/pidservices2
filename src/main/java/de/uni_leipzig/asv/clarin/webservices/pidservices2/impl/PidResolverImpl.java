@@ -1,8 +1,10 @@
 package de.uni_leipzig.asv.clarin.webservices.pidservices2.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -32,7 +34,7 @@ public class PidResolverImpl implements PidResolver {
 	private final static Logger LOG = Logger.getLogger(PidResolverImpl.class);
 
 	public JSONArray resolvePidAsJSON(final Configuration configuration, final String pid) throws IOException {
-		LOG.info("Searching for \"" + pid + "\" at " + configuration.getServiceBaseURL());
+		LOG.debug("Searching for \"" + pid + "\" at " + configuration.getServiceBaseURL());
 
 		final Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
@@ -53,10 +55,34 @@ public class PidResolverImpl implements PidResolver {
 		return new PidObject(pid, resolvePidAsJSON(configuration, pid));
 	}
 
-	public Map<String, JSONArray> searchPidAsJSON(final Configuration configuration,
-			Map<HandleField, String> fieldMap) throws IOException {
-		LOG.info("Searching at " + configuration.getServiceBaseURL() + " with: " + fieldMap);
+	public Map<String, JSONArray> searchPidAsJSON(final Configuration configuration, Map<HandleField, String> fieldMap)
+			throws IOException {
 		Map<String, JSONArray> jsonArrayMap = new HashMap<String, JSONArray>();
+
+		for (String handle : searchPidAsList(configuration, fieldMap)) {
+			jsonArrayMap.put(handle, resolvePidAsJSON(configuration, handle));
+		}
+
+		return jsonArrayMap;
+	}
+
+	public Map<String, PidObject> searchPidAsPOJO(final Configuration configuration, Map<HandleField, String> fieldMap)
+			throws IOException {
+		Map<String, JSONArray> jsonArrayMap = searchPidAsJSON(configuration, fieldMap);
+		Map<String, PidObject> pidObjectsMap = new HashMap<String, PidObject>();
+		Iterator<String> handleIterator = jsonArrayMap.keySet().iterator();
+		while (handleIterator.hasNext()) {
+			String handle = handleIterator.next();
+			pidObjectsMap.put(handle, new PidObject(handle, jsonArrayMap.get(handle)));
+		}
+
+		return pidObjectsMap;
+	}
+
+	public List<String> searchPidAsList(final Configuration configuration, Map<HandleField, String> fieldMap)
+			throws IOException {
+		LOG.debug("Searching at " + configuration.getServiceBaseURL() + " with: " + fieldMap);
+		List<String> handleList = new ArrayList<String>();
 
 		final Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
@@ -83,36 +109,10 @@ public class PidResolverImpl implements PidResolver {
 		JSONArray handleIdJSONArray = JSONArray.fromObject(response.getEntity(String.class));
 		for (int i = 0; i < handleIdJSONArray.size(); i++) {
 			String handle = Configuration.getInstance().getHandlePrefix() + "/" + handleIdJSONArray.getString(i);
+			handleList.add(handle);
 			LOG.debug("Found handle " + i + "\t" + handle);
-			jsonArrayMap.put(handle, resolvePidAsJSON(configuration, handle));
 		}
 
-		return jsonArrayMap;
-	}
-
-	public Map<String, PidObject> searchPidAsPOJO(final Configuration configuration,
-			Map<HandleField, String> fieldMap) throws IOException {
-		Map<String, JSONArray> jsonArrayMap = searchPidAsJSON(configuration, fieldMap);
-		Map<String, PidObject> pidObjectsMap = new HashMap<String, PidObject>();
-		Iterator<String> handleIterator = jsonArrayMap.keySet().iterator();
-		while (handleIterator.hasNext()) {
-			String handle = handleIterator.next();
-			pidObjectsMap.put(handle, new PidObject(handle, jsonArrayMap.get(handle)));
-		}
-
-		return pidObjectsMap;
-	}
-
-	public static void main(String[] args) throws IOException {
-		PidResolverImpl resolver = new PidResolverImpl();
-		String pid = "11022/00-GWDG-00000000005D-9";
-		Map<HandleField, String> handleFieldMap = new HashMap<HandleField, String>();
-		handleFieldMap.put(HandleField.URL, "http://asv.informatik.uni-leipzig.de");
-		// handleFieldMap.put(HandleFieldType.TITLE, "Test Title");
-		// handleFieldMap.put(HandleFieldType.AUTHORS, "Thomas Eckart");
-		PidObject pidObject = resolver.resolvePidAsPOJO(Configuration.getInstance(), pid);
-		System.out.println(pidObject.getValue(HandleField.URL));
-		System.out.println(resolver.searchPidAsJSON(Configuration.getInstance(), handleFieldMap));
-
+		return handleList;
 	}
 }
