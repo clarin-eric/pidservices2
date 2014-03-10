@@ -1,1 +1,3 @@
-Set GWDG password in config.properties!
+To run as standalone:
+-copy config.properties_template to config.properties in main dir
+-set GWDG password in config.properties
