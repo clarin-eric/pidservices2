@@ -1,7 +1,8 @@
 package de.uni_leipzig.asv.clarin.webservices.pidservices2;
 
 /**
- * Possible fields that can be stored via the EPIC v2 API
+ * Fields that can be stored via the EPIC v2 API. This enumeration is a restriction of allowed fields in this project. The EPIC API does not have such
+ * restrictions.
  * 
  * @author Thomas Eckart
  * 
