@@ -48,7 +48,7 @@ public class PidObject {
 	 * 
 	 * @param field
 	 *            name of the stored field
-	 * @return value of the stored field ('parsed_data'), may be NULL
+	 * @return value of the stored field ('parsed_data'), may be null
 	 */
 	public String getValue(HandleField fieldName) {
 		return fieldMap.get(fieldName);
