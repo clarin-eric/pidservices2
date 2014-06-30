@@ -9,7 +9,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.httpclient.HttpException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -27,7 +28,7 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
  * 
  */
 public class PidWriterImpl implements PidWriter {
-	private final static Logger LOG = Logger.getLogger(PidWriterImpl.class);
+	private final static Logger LOG = LoggerFactory.getLogger(PidWriterImpl.class);
 	private static final Pattern PID_OUTPUT_PATTERN = Pattern.compile(".*location</dt><dd><a href=\"([0-9A-Z-]+)\">.*");
 
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap)

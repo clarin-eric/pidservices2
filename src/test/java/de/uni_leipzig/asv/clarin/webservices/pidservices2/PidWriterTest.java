@@ -5,12 +5,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.impl.PidResolverImpl;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.impl.PidWriterImpl;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidResolver;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 
 public class PidWriterTest extends TestCase {
+	private final static Logger LOG = LoggerFactory.getLogger(PidWriterTest.class);
+	private Configuration configuration;
+
+	public PidWriterTest() {
+		try {
+			configuration = new Configuration();
+		} catch (IOException e) {
+			configuration = null;
+			LOG.error(e.getMessage());
+		}
+	}
+
 	public void testPIDWriting() throws IOException {
 		final String url = "http://asv.informatik.uni-leipzig.de";
 		final String oldTitle = "Test Title";
@@ -29,7 +45,7 @@ public class PidWriterTest extends TestCase {
 		final String pid = "11022/0000-0000-1F9F-C";
 
 		// get original title
-		PidObject pidObject = resolver.resolvePidAsPOJO(Configuration.getInstance(), pid);
+		PidObject pidObject = resolver.resolvePidAsPOJO(configuration, pid);
 		String title = pidObject.getValue(HandleField.TITLE);
 		assertEquals(oldTitle, title);
 
@@ -38,20 +54,20 @@ public class PidWriterTest extends TestCase {
 		handleFieldMap = new HashMap<HandleField, String>();
 		handleFieldMap.put(HandleField.TITLE, newTitle);
 		handleFieldMap.put(HandleField.URL, url);
-		pidwriter.modifyPid(Configuration.getInstance(), pid, handleFieldMap);
+		pidwriter.modifyPid(configuration, pid, handleFieldMap);
 
 		// check
-		pidObject = resolver.resolvePidAsPOJO(Configuration.getInstance(), pid);
+		pidObject = resolver.resolvePidAsPOJO(configuration, pid);
 		final String changedTitle = pidObject.getValue(HandleField.TITLE);
 		assertEquals(newTitle, changedTitle);
 
 		// set old title again
 		handleFieldMap.put(HandleField.TITLE, oldTitle);
 		handleFieldMap.put(HandleField.URL, url);
-		pidwriter.modifyPid(Configuration.getInstance(), pid, handleFieldMap);
+		pidwriter.modifyPid(configuration, pid, handleFieldMap);
 
 		// check
-		pidObject = resolver.resolvePidAsPOJO(Configuration.getInstance(), pid);
+		pidObject = resolver.resolvePidAsPOJO(configuration, pid);
 		title = pidObject.getValue(HandleField.TITLE);
 		assertEquals(title, oldTitle);
 	}

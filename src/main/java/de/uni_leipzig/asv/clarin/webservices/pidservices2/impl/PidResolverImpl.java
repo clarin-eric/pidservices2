@@ -11,7 +11,8 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import net.sf.json.JSONArray;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -31,8 +32,9 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidResolver
  * 
  */
 public class PidResolverImpl implements PidResolver {
-	private final static Logger LOG = Logger.getLogger(PidResolverImpl.class);
+	private final static Logger LOG = LoggerFactory.getLogger(PidResolverImpl.class);
 
+	@Override
 	public JSONArray resolvePidAsJSON(final Configuration configuration, final String pid) throws IOException {
 		LOG.debug("Searching for \"" + pid + "\" at " + configuration.getServiceBaseURL());
 
@@ -51,10 +53,12 @@ public class PidResolverImpl implements PidResolver {
 		return JSONArray.fromObject(clientResponse.getEntity(String.class));
 	}
 
+	@Override
 	public PidObject resolvePidAsPOJO(final Configuration configuration, final String pid) throws IOException {
 		return new PidObject(pid, resolvePidAsJSON(configuration, pid));
 	}
 
+	@Override
 	public Map<String, JSONArray> searchPidAsJSON(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws IOException {
 		Map<String, JSONArray> jsonArrayMap = new HashMap<String, JSONArray>();
@@ -66,6 +70,7 @@ public class PidResolverImpl implements PidResolver {
 		return jsonArrayMap;
 	}
 
+	@Override
 	public Map<String, PidObject> searchPidAsPOJO(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws IOException {
 		Map<String, JSONArray> jsonArrayMap = searchPidAsJSON(configuration, fieldMap);
@@ -79,6 +84,7 @@ public class PidResolverImpl implements PidResolver {
 		return pidObjectsMap;
 	}
 
+	@Override
 	public List<String> searchPidAsList(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws IOException {
 		LOG.debug("Searching at " + configuration.getServiceBaseURL() + " with: " + fieldMap);
@@ -108,7 +114,7 @@ public class PidResolverImpl implements PidResolver {
 		// parse response and get all handle fields
 		JSONArray handleIdJSONArray = JSONArray.fromObject(response.getEntity(String.class));
 		for (int i = 0; i < handleIdJSONArray.size(); i++) {
-			String handle = Configuration.getInstance().getHandlePrefix() + "/" + handleIdJSONArray.getString(i);
+			String handle = configuration.getHandlePrefix() + "/" + handleIdJSONArray.getString(i);
 			handleList.add(handle);
 			LOG.debug("Found handle " + i + "\t" + handle);
 		}
