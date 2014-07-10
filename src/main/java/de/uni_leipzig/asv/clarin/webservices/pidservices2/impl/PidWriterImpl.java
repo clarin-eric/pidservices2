@@ -31,6 +31,7 @@ public class PidWriterImpl implements PidWriter {
 	private final static Logger LOG = LoggerFactory.getLogger(PidWriterImpl.class);
 	private static final Pattern PID_OUTPUT_PATTERN = Pattern.compile(".*location</dt><dd><a href=\"([0-9A-Z-]+)\">.*");
 
+	@Override
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws HttpException {
 		LOG.debug("Try to create handle at " + configuration.getServiceBaseURL() + " with values: " + fieldMap);
@@ -58,6 +59,7 @@ public class PidWriterImpl implements PidWriter {
 		}
 	}
 
+	@Override
 	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap) {
 		LOG.debug("Try to modify handle \"" + pid + "\" at " + configuration.getServiceBaseURL() + " with new values: "
 				+ fieldMap);
