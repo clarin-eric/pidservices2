@@ -1,3 +1,6 @@
-To build (including tests):
+To build project (including tests):
 -copy config.properties_template to config.properties in src/test/resources
 -set GWDG user/password in config.properties
+
+
+Test 'PidWriterTest': creates new Handle, to omit comment out pidwriter.registerNewPID()
