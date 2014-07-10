@@ -13,7 +13,6 @@ import com.jayway.jsonpath.PathNotFoundException;
  * Stores most(!) relevant information of a PID JSON object retrieved from the GWDG
  * 
  * @author Thomas Eckart
- * 
  */
 public class PidObject {
 	private final String handleIdentifier;

@@ -5,7 +5,6 @@ package de.uni_leipzig.asv.clarin.webservices.pidservices2;
  * restrictions.
  * 
  * @author Thomas Eckart
- * 
  */
 public enum HandleField {
 	AUTHORS, CREATOR, EXPDATE, INST, METADATA_URL, PUBDATE, TITLE, URL

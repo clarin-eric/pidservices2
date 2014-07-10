@@ -13,7 +13,6 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.PidObject;
  * Requests information about handle from handle server
  * 
  * @author Thomas Eckart
- * 
  */
 public interface PidResolver {
 

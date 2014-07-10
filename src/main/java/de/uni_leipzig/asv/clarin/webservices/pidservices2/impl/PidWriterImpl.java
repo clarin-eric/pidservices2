@@ -25,7 +25,6 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
  * Registering new handles at handle server or modifying existing PID entries
  * 
  * @author Thomas Eckart
- * 
  */
 public class PidWriterImpl implements PidWriter {
 	private final static Logger LOG = LoggerFactory.getLogger(PidWriterImpl.class);
