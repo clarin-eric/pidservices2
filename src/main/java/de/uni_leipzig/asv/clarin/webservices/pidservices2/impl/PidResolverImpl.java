@@ -29,6 +29,7 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidResolver
  * Requests information about handle from handle server
  * 
  * @author Thomas Eckart
+ * @author Twan Goosen
  */
 public class PidResolverImpl implements PidResolver {
 	private final static Logger LOG = LoggerFactory.getLogger(PidResolverImpl.class);
