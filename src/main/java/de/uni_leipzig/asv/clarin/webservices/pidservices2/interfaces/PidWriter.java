@@ -21,12 +21,13 @@ public interface PidWriter {
 	 * 
 	 * @param configuration
 	 * @param fieldMap
-	 *            handle mapping field -> value
 	 * @param pid
-	 *            PID to register
-	 * @return registered handle identifier
-	 * @throws HTTPException
-	 *             if the handle could not be created, possibly because the ID already exists at the server
+	 *            PID to be created, must match {@link #PID_INPUT_PATTERN}
+	 * @return
+	 * @throws HttpException
+	 *             if the PID could not be created, for instance because the requested PID already exists
+	 * @throws IllegalArgumentException
+	 *             if the provided PID does not match {@link #PID_INPUT_PATTERN}
 	 */
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String pid)
 			throws HttpException;

@@ -35,18 +35,6 @@ public class PidWriterImpl implements PidWriter {
 	public static final Pattern PID_INPUT_PATTERN = Pattern.compile("^[0-9A-z-]+$");
 	private static final Pattern PID_OUTPUT_PATTERN = Pattern.compile(".*location</dt><dd><a href=\"([0-9A-z-]+)\">.*");
 
-	/**
-	 * 
-	 * @param configuration
-	 * @param fieldMap
-	 * @param pid
-	 *            PID to be created, must match {@link #PID_INPUT_PATTERN}
-	 * @return
-	 * @throws HttpException
-	 *             if the PID could not be created, for instance because the requested PID already exists
-	 * @throws IllegalArgumentException
-	 *             if the provided PID does not match {@link #PID_INPUT_PATTERN}
-	 */
 	@Override
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String pid)
 			throws HttpException, IllegalArgumentException {
