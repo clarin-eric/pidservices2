@@ -7,3 +7,6 @@ HANDLE_PREFIX=11022
 # authentification
 USER=1005-01
 PASSWORD=PASS
+
+TEST_PID=11022/0000-0000-1F9F-C
+TEST_URL=http://asv.informatik.uni-leipzig.de
