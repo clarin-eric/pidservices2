@@ -23,7 +23,7 @@ public interface PidWriter {
 	 * @param fieldMap
 	 * @param pid
 	 *            PID to be created, must match {@link #PID_INPUT_PATTERN}
-	 * @return
+	 * @return registered handle identifier
 	 * @throws HttpException
 	 *             if the PID could not be created, for instance because the requested PID already exists
 	 * @throws IllegalArgumentException

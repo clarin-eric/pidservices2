@@ -45,7 +45,7 @@ public class PidObject {
 	/**
 	 * Returns stored value in EPIC handle for a specific field
 	 * 
-	 * @param field
+	 * @param fieldName
 	 *            name of the stored field
 	 * @return value of the stored field ('parsed_data'), may be null
 	 */
