@@ -2,7 +2,6 @@ package de.uni_leipzig.asv.clarin.webservices.pidservices2.impl;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.json.JSONArray;
@@ -33,7 +32,6 @@ public class PidWriterImpl implements PidWriter {
 
 	private final static Logger LOG = LoggerFactory.getLogger(PidWriterImpl.class);
 	public static final Pattern PID_INPUT_PATTERN = Pattern.compile("^[0-9A-z-]+$");
-	private static final Pattern PID_OUTPUT_PATTERN = Pattern.compile(".*location</dt><dd><a href=\"([0-9A-z-]+)\">.*");
 
 	@Override
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String pid)
@@ -77,8 +75,7 @@ public class PidWriterImpl implements PidWriter {
 	private WebResource.Builder createResourceBuilderForNewPID(final Configuration configuration, final String baseUrl) {
 		final Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
-		// TODO: request JSON ("application/json") as soon as GWDG respects that accept header
-		final WebResource.Builder resourceBuilder = client.resource(baseUrl).accept("application/xhtml+xml")
+		final WebResource.Builder resourceBuilder = client.resource(baseUrl).accept("application/json")
 				.type("application/json");
 		return resourceBuilder;
 	}
@@ -89,15 +86,7 @@ public class PidWriterImpl implements PidWriter {
 			throw new HttpException("" + response.getStatus());
 		}
 
-		// TODO CHANGE this to JSON processing ASAP, when GWDG respects accept header
-		String responseString = response.getEntity(String.class).trim().replaceAll("\n", "");
-		Matcher matcher = PID_OUTPUT_PATTERN.matcher(responseString);
-		if (matcher.matches()) {
-			return configuration.getHandlePrefix() + "/" + matcher.group(1);
-		} else {
-			LOG.error("No PID found in response string: {}", responseString);
-			throw new RuntimeException("Unparsable response from " + configuration.getServiceBaseURL());
-		}
+		return response.getLocation().toString().replace(configuration.getServiceBaseURL(), "");
 	}
 
 	@Override
