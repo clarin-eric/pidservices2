@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.uni_leipzig.asv</groupId>
@@ -92,6 +91,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<version>2.3</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -121,4 +121,24 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>RepositoryProxy</name>
+			<url>http://clarindevel.informatik.uni-leipzig.de:8080/nexus-2.5.1/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<name>SnapshotRepositoryProxy</name>
+			<url>http://clarindevel.informatik.uni-leipzig.de:8080/nexus-2.5.1/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:git:ssh://git@clarindevel.informatik.uni-leipzig.de:/~/${project.groupId}.${project.artifactId}.git</connection>
+		<url>scm:git:ssh://git@clarindevel.informatik.uni-leipzig.de:/~/${project.groupId}.${project.artifactId}.git</url>
+		<developerConnection>scm:git:ssh://git@clarindevel.informatik.uni-leipzig.de:/~/${project.groupId}.${project.artifactId}.git</developerConnection>
+		<tag>v0.0.18</tag>
+	</scm>
 </project>
