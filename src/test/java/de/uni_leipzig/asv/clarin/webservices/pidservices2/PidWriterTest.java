@@ -18,20 +18,22 @@ public class PidWriterTest extends ResolverTest {
 	@Test
 	public void testPIDWriting() throws IOException {
 		final String url = "http://clarin.eu";
-		final String oldTitle = "CLARIN Website";
+		final String oldTitle = "Test Title";
 
 		final PidWriter pidwriter = new PidWriterImpl();
 		final PidResolver resolver = new PidResolverImpl();
 		Map<HandleField, String> handleFieldMap;
 
 		// register new PID
-		handleFieldMap = new HashMap<HandleField, String>();
-		handleFieldMap.put(HandleField.URL, url);
-		handleFieldMap.put(HandleField.TITLE, oldTitle);
-		final String pid = pidwriter.registerNewPID(getConfiguration(), handleFieldMap);
+		// handleFieldMap = new HashMap<HandleField, String>();
+		// handleFieldMap.put(HandleField.URL, url);
+		// handleFieldMap.put(HandleField.TITLE, oldTitle);
+		// final String pid = pidwriter.registerNewPID(getConfiguration(),
+		// handleFieldMap);
 
-		// // modifying existing PID to avoid creating a new one just for testing purposes
-		// final String pid = "11022/0000-0000-1F9F-C";
+		// // modifying existing PID to avoid creating a new one just for
+		// testing purposes
+		final String pid = "11022/0000-0000-1F9F-C";
 		// get original title
 		PidObject pidObject = resolver.resolvePidAsPOJO(getConfiguration(), pid);
 		String title = pidObject.getValue(HandleField.TITLE);
@@ -74,9 +76,10 @@ public class PidWriterTest extends ResolverTest {
 		handleFieldMap.put(HandleField.URL, url);
 		handleFieldMap.put(HandleField.TITLE, oldTitle);
 		final String resultPid = pidwriter.registerNewPID(getConfiguration(), handleFieldMap, pid);
+		final String expectedResultPid = getConfiguration().getHandlePrefix() + "/" + pid;
+
 		// test if requested ID was created
-		assertEquals("Returned PID should equal requested PID", getConfiguration().getHandlePrefix() + "/" + pid,
-				resultPid);
+		assertEquals("Returned PID should equal requested PID", expectedResultPid, resultPid);
 
 		// get title to check if PID has been created
 		final PidObject pidObject = resolver.resolvePidAsPOJO(getConfiguration(), resultPid);

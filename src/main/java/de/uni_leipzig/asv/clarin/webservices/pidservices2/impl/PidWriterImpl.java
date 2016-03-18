@@ -4,9 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +18,8 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * Registering new handles at handle server or modifying existing PID entries
@@ -50,7 +49,8 @@ public class PidWriterImpl implements PidWriter {
 
 		final JSONArray jsonArray = createJSONArray(fieldMap);
 		final ClientResponse response = resourceBuilder
-		// this header will tell the server to fail if the requested PID already exists
+				// this header will tell the server to fail if the requested PID
+				// already exists
 				.header("If-None-Match", "*")
 				// PUT the handle at the specified location
 				.put(ClientResponse.class, jsonArray.toString());
@@ -67,12 +67,13 @@ public class PidWriterImpl implements PidWriter {
 
 		final JSONArray jsonArray = createJSONArray(fieldMap);
 		final ClientResponse response = resourceBuilder
-		// POST the new handle definition to the handles resource
+				// POST the new handle definition to the handles resource
 				.post(ClientResponse.class, jsonArray.toString());
 		return processCreateResponse(response, configuration);
 	}
 
-	private WebResource.Builder createResourceBuilderForNewPID(final Configuration configuration, final String baseUrl) {
+	private WebResource.Builder createResourceBuilderForNewPID(final Configuration configuration,
+			final String baseUrl) {
 		final Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
 		final WebResource.Builder resourceBuilder = client.resource(baseUrl).accept("application/json")
@@ -86,7 +87,8 @@ public class PidWriterImpl implements PidWriter {
 			throw new HttpException("" + response.getStatus());
 		}
 
-		return response.getLocation().toString().replace(configuration.getServiceBaseURL(), "");
+		return response.getLocation().toString().replace(configuration.getServiceBaseURL().replace("http", "https"),
+				"");
 	}
 
 	@Override
