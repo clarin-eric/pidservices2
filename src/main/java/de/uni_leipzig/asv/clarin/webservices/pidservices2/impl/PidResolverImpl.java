@@ -9,8 +9,6 @@ import java.util.Map;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import net.sf.json.JSONArray;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +22,7 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.PidObject;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidResolver;
+import net.sf.json.JSONArray;
 
 /**
  * Requests information about handle from handle server
@@ -43,8 +42,8 @@ public class PidResolverImpl implements PidResolver {
 		final WebResource webResource = client.resource(configuration.getServiceBaseURL() + pid);
 
 		// query
-		final ClientResponse clientResponse = webResource.accept("application/json;charset=UTF-8").get(
-				ClientResponse.class);
+		final ClientResponse clientResponse = webResource.accept("application/json;charset=UTF-8")
+				.get(ClientResponse.class);
 		if (clientResponse.getStatus() != 200) {
 			throw new IOException("Received a different response than expected (200): " + clientResponse.getStatus()
 					+ " (URL: '" + webResource.toString() + "')");
@@ -92,8 +91,8 @@ public class PidResolverImpl implements PidResolver {
 
 		final Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
-		final WebResource webResource = client.resource(configuration.getServiceBaseURL()
-				+ configuration.getHandlePrefix());
+		final WebResource webResource = client
+				.resource(configuration.getServiceBaseURL() + configuration.getHandlePrefix());
 
 		// add URL parameters
 		final MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
