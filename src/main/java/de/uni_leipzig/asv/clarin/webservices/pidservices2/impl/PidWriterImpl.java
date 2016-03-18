@@ -87,8 +87,7 @@ public class PidWriterImpl implements PidWriter {
 			throw new HttpException("" + response.getStatus());
 		}
 
-		return response.getLocation().toString().replace(configuration.getServiceBaseURL().replace("http", "https"),
-				"");
+		return response.getLocation().toString().replace(configuration.getServiceBaseURL(), "");
 	}
 
 	@Override

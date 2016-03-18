@@ -36,6 +36,7 @@ public class PidResolverImpl implements PidResolver {
 	@Override
 	public JSONArray resolvePidAsJSON(final Configuration configuration, final String pid) throws IOException {
 		LOG.debug("Searching for \"" + pid + "\" at " + configuration.getServiceBaseURL());
+		System.setProperty("jsse.enableSNIExtension", "false");
 
 		final Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
@@ -88,7 +89,7 @@ public class PidResolverImpl implements PidResolver {
 			throws IOException {
 		LOG.debug("Searching at " + configuration.getServiceBaseURL() + " with: " + fieldMap);
 		List<String> handleList = new ArrayList<String>();
-
+		System.setProperty("jsse.enableSNIExtension", "false");
 		final Client client = Client.create();
 		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
 		final WebResource webResource = client

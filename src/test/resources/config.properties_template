@@ -1,5 +1,5 @@
 # URL of handle webservice system
-SERVICE_BASE_URL=http://pid.gwdg.de/handles/
+SERVICE_BASE_URL=https://pid.gwdg.de/handles/
 
 # handle prefix
 HANDLE_PREFIX=11022

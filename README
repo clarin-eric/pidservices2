@@ -3,4 +3,4 @@ To build project (including tests):
 -set GWDG user/password in config.properties
 
 
-Test 'PidWriterTest': creates new Handle, to omit comment out pidwriter.registerNewPID()
+Test 'PidWriterTest': would create new Handle, right now omitted to reduce creation of useless test Handles (can be enabled in PidWriterTest.testPIDWriting() for complete tests)
