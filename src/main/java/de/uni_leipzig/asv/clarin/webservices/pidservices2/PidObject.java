@@ -4,13 +4,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
+import net.sf.json.JSONArray;
+
 /**
- * Stores most(!) relevant information of a PID JSON object retrieved from the GWDG
+ * Stores <emph>some</emph> relevant information of a PID JSON object retrieved
+ * from the GWDG
  * 
  * @author Thomas Eckart
  */
@@ -25,7 +26,7 @@ public class PidObject {
 		String jsonPath;
 		for (HandleField fieldName : HandleField.values()) {
 			try {
-				jsonPath = "$..[?(@.type=='" + fieldName + "')].parsed_data[0]";
+				jsonPath = "$..[?(@.type=='" + fieldName.getType() + "')].parsed_data[0]";
 				fieldMap.put(fieldName, JsonPath.read(pidJsonArray, jsonPath).toString());
 			} catch (PathNotFoundException pnfe) {
 				fieldMap.put(fieldName, null);

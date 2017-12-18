@@ -38,7 +38,7 @@ public class PidWriterImpl implements PidWriter {
 		LOG.debug("Try to create handle {} at {} with values: {}", pid, configuration.getServiceBaseURL(), fieldMap);
 
 		// validate the requested PID
-		if (!PID_INPUT_PATTERN.matcher(pid).matches()) {
+		if(!PID_INPUT_PATTERN.matcher(pid).matches()) {
 			throw new IllegalArgumentException(pid);
 		}
 
@@ -83,7 +83,7 @@ public class PidWriterImpl implements PidWriter {
 
 	private String processCreateResponse(final ClientResponse response, final Configuration configuration)
 			throws HttpException, UniformInterfaceException, RuntimeException, ClientHandlerException {
-		if (response.getStatus() != 201) {
+		if(response.getStatus() != 201) {
 			throw new HttpException("" + response.getStatus());
 		}
 
@@ -118,7 +118,7 @@ public class PidWriterImpl implements PidWriter {
 		while (fieldIter.hasNext()) {
 			jsonObject = new JSONObject();
 			HandleField handleFieldTyp = fieldIter.next();
-			jsonObject.put("type", handleFieldTyp);
+			jsonObject.put("type", handleFieldTyp.getType());
 			jsonObject.put("parsed_data", fieldMap.get(handleFieldTyp));
 			jsonArray.add(jsonObject);
 		}
