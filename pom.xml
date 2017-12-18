@@ -4,13 +4,13 @@
 	<groupId>de.uni_leipzig.asv</groupId>
 	<artifactId>clarin.webservices.pidservices2</artifactId>
 
-	<version>2.2.2</version>
+	<version>3.0</version>
 	<packaging>jar</packaging>
 	<name>${project.groupId}.${project.artifactId}</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.7</slf4j.version>
+		<slf4j.version>1.7.25</slf4j.version>
 	</properties>
 
 	<dependencies>
@@ -22,12 +22,12 @@
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-apache-client</artifactId>
-			<version>1.18</version>
+			<version>1.19.4</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
