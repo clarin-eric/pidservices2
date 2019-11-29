@@ -107,7 +107,7 @@ public class PidWriterImpl implements PidWriter {
 	 * Generates JSON array that is understood by the EPIC handle service
 	 * 
 	 * @param fieldMap
-	 *            mapping handle field -> value
+	 *            mapping handle field to value
 	 * @return JSON array
 	 */
 	private JSONArray createJSONArray(Map<HandleField, String> fieldMap) {

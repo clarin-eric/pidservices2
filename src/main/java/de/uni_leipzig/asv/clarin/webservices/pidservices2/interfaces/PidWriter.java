@@ -22,12 +22,12 @@ public interface PidWriter {
 	 * @param configuration
 	 * @param fieldMap
 	 * @param pid
-	 *            PID to be created, must match {@link #PID_INPUT_PATTERN}
+	 *            PID to be created, must match (see PID_INPUT_PATTERN)
 	 * @return registered handle identifier
 	 * @throws HttpException
 	 *             if the PID could not be created, for instance because the requested PID already exists
 	 * @throws IllegalArgumentException
-	 *             if the provided PID does not match {@link #PID_INPUT_PATTERN}
+	 *             if the provided PID does not match (see PID_INPUT_PATTERN)
 	 */
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String pid)
 			throws HttpException;
@@ -37,7 +37,7 @@ public interface PidWriter {
 	 * 
 	 * @param configuration
 	 * @param fieldMap
-	 *            handle mapping field -> value
+	 *            handle mapping field to value
 	 * @return registered handle identifier
 	 * @throws HTTPException
 	 */
@@ -51,7 +51,7 @@ public interface PidWriter {
 	 * @param pid
 	 *            Persistent identifier that will be modified/overwritten
 	 * @param fieldMap
-	 *            new field values: mapping handle field -> value
+	 *            new field values: mapping handle field to value
 	 */
 	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap);
 }

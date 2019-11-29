@@ -46,7 +46,7 @@ public interface PidResolver {
 	 * @param configuration
 	 * @param fieldMap
 	 *            searched handle field assignments
-	 * @return Map handles -> handle fields as JSONArray
+	 * @return Map handles to handle fields as JSONArray
 	 * @throws IOException
 	 */
 	public Map<String, JSONArray> searchPidAsJSON(final Configuration configuration, Map<HandleField, String> fieldMap)
@@ -58,7 +58,7 @@ public interface PidResolver {
 	 * @param configuration
 	 * @param fieldMap
 	 *            searched handle field assignments
-	 * @return Map handles -> handle fields as PidObject
+	 * @return Map handles to handle fields as PidObject
 	 * @throws IOException
 	 */
 	public Map<String, PidObject> searchPidAsPOJO(final Configuration configuration, Map<HandleField, String> fieldMap)
