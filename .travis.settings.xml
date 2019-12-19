@@ -1,12 +1,12 @@
-<Settings Xmlns="Http://Maven.Apache.Org/SETTINGS/1.0.0"
-          Xmlns:Xsi="Http://Www.W3.Org/2001/XMLSchema-Instance"
-          Xsi:SchemaLocation="Http://Maven.Apache.Org/SETTINGS/1.0.0
-                      Http://Maven.Apache.Org/Xsd/Settings-1.0.0.Xsd">
-  <Servers>
-    <Server>
-      <Id>github</Id>
-      <Username>willem@clarin.eu</Username>
-      <Password>${env.DEPLOY_TOKEN}</Password>
-    </Server>
-  </Servers>
-</Settings>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+    <server>
+      <id>github</id>
+      <username>willem@clarin.eu</username>
+      <password>${env.DEPLOY_TOKEN}</password>
+    </server>
+  </servers>
+</settings>
