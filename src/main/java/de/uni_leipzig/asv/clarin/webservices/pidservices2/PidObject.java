@@ -10,7 +10,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 import net.sf.json.JSONArray;
 
 /**
- * Stores <emph>some</emph> relevant information of a PID JSON object retrieved
+ * Stores <i>some</i> relevant information of a PID JSON object retrieved
  * from the GWDG
  * 
  * @author Thomas Eckart
