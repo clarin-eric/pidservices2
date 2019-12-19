@@ -2,6 +2,8 @@ PidServices
 ===========
 Code to interact with the EPIC Handle API.
 
+Originally developed by Thomas Eckart @ University of Leipzig.
+
 Configuration
 -------------
 To build project (including tests):
