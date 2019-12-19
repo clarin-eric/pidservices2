@@ -1,3 +1,5 @@
+https://travis-ci.org/clarin-eric/pidservices2.svg?branch=master
+
 PidServices
 ===========
 Code to interact with the EPIC Handle API.
