@@ -13,14 +13,19 @@ script:
 - mvn clean install -DskipTests=true -Pdocker
 
 deploy:
-  provider: releases
-  prerelease: true
-  api_key:
-    secure: "${DEPLOY_TOKEN}"
-  file: "target/clarin.webservices.pidservices2-${TRAVIS_TAG}.jar"
-  skip_cleanup: true
-  on:
-   tags: true
+  - provider: script
+    script: mvn deploy -Dregistry=https://maven.pkg.github.com/clarin-eric -Dtoken="${DEPLOY_TOKEN}"
+    on:
+      tags: true
+  - provider: releases
+    prerelease: true
+    api_key:
+      secure: "${DEPLOY_TOKEN}"
+    file: "target/clarin.webservices.pidservices2-${TRAVIS_TAG}.jar"
+    skip_cleanup: true
+    on:
+      tags: true
+
 
 notifications:
   email:
