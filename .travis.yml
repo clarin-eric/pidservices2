@@ -1,9 +1,10 @@
 sudo: false
 language: java
 jdk:
-- openjdk8
+- openjdk11
 
 before_install:
+- mvn --version
 - unset GEM_PATH
 - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=512m'" > ~/.mavenrc
 script:
@@ -14,7 +15,7 @@ script:
 
 deploy:
   - provider: script
-    script: "cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -X -Dmaven.wagon.http.pool=false -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/clarin-eric/pidservices2"
+    script: "mvn versions:set -DnewVersion=${TRAVIS_TAG} versions:commit && cp .travis.settings.xml $HOME/.m2/settings.xml && mvn deploy -X -Dmaven.wagon.http.pool=false -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/clarin-eric/pidservices2"
     on:
       tags: true
   - provider: releases
