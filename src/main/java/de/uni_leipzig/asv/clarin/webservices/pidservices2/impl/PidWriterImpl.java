@@ -8,16 +8,13 @@ import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -27,33 +24,29 @@ import net.sf.json.JSONObject;
  * @author Thomas Eckart
  * @author Twan Goosen
  */
-public class PidWriterImpl implements PidWriter {
+public class PidWriterImpl extends AbstractPidClient implements PidWriter {
 
 	private final static Logger LOG = LoggerFactory.getLogger(PidWriterImpl.class);
 	public static final Pattern PID_INPUT_PATTERN = Pattern.compile("^[0-9A-z-]+$");
 
 	@Override
-	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String pid)
+	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String suffix)
 			throws HttpException, IllegalArgumentException {
-		LOG.debug("Try to create handle {} at {} with values: {}", pid, configuration.getServiceBaseURL(), fieldMap);
+		LOG.debug("Try to create handle {} at {} with values: {}", suffix, configuration.getServiceBaseURL(), fieldMap);
 
 		// validate the requested PID
-		if(!PID_INPUT_PATTERN.matcher(pid).matches()) {
-			throw new IllegalArgumentException(pid);
+		if(!PID_INPUT_PATTERN.matcher(suffix).matches()) {
+			throw new IllegalArgumentException("Pid suffix does not match input pattern: "+suffix);
 		}
 
-		// adding the PID to the request URL
-		final String baseUrl = String.format("%s%s/%s", configuration.getServiceBaseURL(),
-				configuration.getHandlePrefix(), pid);
-		final WebResource.Builder resourceBuilder = createResourceBuilderForNewPID(configuration, baseUrl);
-
-		final JSONArray jsonArray = createJSONArray(fieldMap);
-		final ClientResponse response = resourceBuilder
-				// this header will tell the server to fail if the requested PID
-				// already exists
-				.header("If-None-Match", "*")
-				// PUT the handle at the specified location
-				.put(ClientResponse.class, jsonArray.toString());
+		final WebTarget webTarget = getWebtarget(configuration, String.format("%s/%s", configuration.getHandlePrefix(), suffix));
+                final JSONArray jsonArray = createJSONArray(fieldMap);
+                final Response response =  webTarget
+                        .request(MediaType.APPLICATION_JSON)
+                        .accept("application/json")
+                        .header("If-None-Match", "*") // this header will tell the server to fail if the requested PID already exists
+                        .put(Entity.entity(jsonArray.toString(), MediaType.APPLICATION_JSON));
+                
 		return processCreateResponse(response, configuration);
 	}
 
@@ -62,45 +55,45 @@ public class PidWriterImpl implements PidWriter {
 			throws HttpException {
 		LOG.debug("Try to create handle at {} with values: {}", configuration.getServiceBaseURL(), fieldMap);
 
-		final String baseUrl = configuration.getServiceBaseURL() + configuration.getHandlePrefix();
-		final WebResource.Builder resourceBuilder = createResourceBuilderForNewPID(configuration, baseUrl);
-
-		final JSONArray jsonArray = createJSONArray(fieldMap);
-		final ClientResponse response = resourceBuilder
-				// POST the new handle definition to the handles resource
-				.post(ClientResponse.class, jsonArray.toString());
+                final WebTarget webTarget = getWebtarget(configuration,configuration.getHandlePrefix()); 
+                final JSONArray jsonArray = createJSONArray(fieldMap);
+                final Response response =  webTarget
+                        .request(MediaType.APPLICATION_JSON)
+                        .accept("application/json")
+                        .post(Entity.entity(jsonArray.toString(), MediaType.APPLICATION_JSON));
+                
 		return processCreateResponse(response, configuration);
 	}
 
-	private WebResource.Builder createResourceBuilderForNewPID(final Configuration configuration,
-			final String baseUrl) {
-		final Client client = Client.create();
-		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
-		final WebResource.Builder resourceBuilder = client.resource(baseUrl).accept("application/json")
-				.type("application/json");
-		return resourceBuilder;
-	}
-
-	private String processCreateResponse(final ClientResponse response, final Configuration configuration)
-			throws HttpException, UniformInterfaceException, RuntimeException, ClientHandlerException {
+        private String processCreateResponse(final Response response, final Configuration configuration)
+			throws HttpException, RuntimeException {
 		if(response.getStatus() != 201) {
 			throw new HttpException("" + response.getStatus());
 		}
 
-		return response.getLocation().toString().replace(configuration.getServiceBaseURL(), "");
+                String base = configuration.getServiceBaseURL();
+                if(!base.endsWith("/")) {
+                    base += "/";
+                }
+		return response.getLocation().toString().replace(base, "");
 	}
 
 	@Override
-	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap) {
+	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap) 
+            throws HttpException {
 		LOG.debug("Try to modify handle \"" + pid + "\" at " + configuration.getServiceBaseURL() + " with new values: "
 				+ fieldMap);
 
-		final Client client = Client.create();
-		client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
-		final WebResource webResource = client.resource(configuration.getServiceBaseURL() + pid);
-
-		JSONArray jsonArray = createJSONArray(fieldMap);
-		webResource.accept("application/json").type("application/json").put(ClientResponse.class, jsonArray.toString());
+                final WebTarget webTarget = getWebtarget(configuration, pid);
+		final JSONArray jsonArray = createJSONArray(fieldMap);
+		 final Response response = webTarget
+                    .request(MediaType.APPLICATION_JSON)
+                    .accept("application/json")
+                    .put(Entity.entity(jsonArray.toString(), MediaType.APPLICATION_JSON));
+                 
+                 if(response.getStatus() != 201) {
+                     throw new HttpException("Invalid response: "+response.getStatus());
+                 }
 	}
 
 	/**

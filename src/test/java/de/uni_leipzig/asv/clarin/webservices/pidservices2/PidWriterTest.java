@@ -1,119 +1,96 @@
 package de.uni_leipzig.asv.clarin.webservices.pidservices2;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static de.uni_leipzig.asv.clarin.webservices.pidservices2.AbstractTest.TEST_API_PATH;
+import static de.uni_leipzig.asv.clarin.webservices.pidservices2.AbstractTest.TEST_HANDLE_PREFIX;
+import static de.uni_leipzig.asv.clarin.webservices.pidservices2.AbstractTest.TEST_HOST;
+import static de.uni_leipzig.asv.clarin.webservices.pidservices2.AbstractTest.TEST_NEW_HANDLE_SUFFIX;
+import static de.uni_leipzig.asv.clarin.webservices.pidservices2.AbstractTest.TEST_NEW_HANDLE_TITLE;
+import static de.uni_leipzig.asv.clarin.webservices.pidservices2.AbstractTest.TEST_NEW_HANDLE_URL;
+import static de.uni_leipzig.asv.clarin.webservices.pidservices2.AbstractTest.TEST_PORT;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-
-import org.apache.commons.httpclient.HttpException;
 import org.junit.Test;
 
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.impl.PidResolverImpl;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.impl.PidWriterImpl;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidResolver;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
+import java.util.EnumMap;
+import net.sf.json.JSONObject;
 
-public class PidWriterTest extends ResolverTest {
+public class PidWriterTest extends AbstractTest {
 
-	@Test
-	public void testPIDWriting() throws IOException {
-		final String url = "http://clarin.eu";
-		final String oldTitle = "Test Title";
+    final PidWriter pidwriter = new PidWriterImpl();
+    final PidResolver resolver = new PidResolverImpl();
 
-		final PidWriter pidwriter = new PidWriterImpl();
-		final PidResolver resolver = new PidResolverImpl();
-		Map<HandleField, String> handleFieldMap;
+    protected String getJsonHandleField(HandleField type, String data) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", type.getType());
+        jsonObject.put("parsed_data", data);
+        return jsonObject.toString();
+    }
 
-		// register new PID
-		// handleFieldMap = new HashMap<HandleField, String>();
-		// handleFieldMap.put(HandleField.URL, url);
-		// handleFieldMap.put(HandleField.TITLE, oldTitle);
-		// final String pid = pidwriter.registerNewPID(getConfiguration(),
-		// handleFieldMap);
+    @Test
+    public void testPIDWriting() throws IOException {
+        stubFor(put(urlEqualTo(String.format("%s/%s/%s", TEST_API_PATH, TEST_HANDLE_PREFIX, TEST_NEW_HANDLE_SUFFIX)))
+                .withBasicAuth(TEST_API_USER, TEST_API_PASSWORD)
+                .withHeader("Accept", containing("application/json"))
+                .withRequestBody(containing(getJsonHandleField(HandleField.URL, TEST_NEW_HANDLE_URL)))
+                .withRequestBody(containing(getJsonHandleField(HandleField.TITLE, TEST_NEW_HANDLE_TITLE)))
+                .willReturn(aResponse()
+                        .withStatus(201)));
 
-		// // modifying existing PID to avoid creating a new one just for
-		// testing purposes
-		final String pid = "11022/0000-0000-1F9F-C";
-		// get original title
-		PidObject pidObject = resolver.resolvePidAsPOJO(getConfiguration(), pid);
-		String title = pidObject.getValue(HandleField.TITLE);
-		assertEquals(oldTitle, title);
+        final String pid = String.format("%s/%s", TEST_HANDLE_PREFIX, TEST_NEW_HANDLE_SUFFIX);
+        final String newTitle = "newtitle";
+        final Map<HandleField, String> handleFieldMap = new EnumMap<>(HandleField.class);
+        handleFieldMap.put(HandleField.TITLE, TEST_NEW_HANDLE_TITLE);
+        handleFieldMap.put(HandleField.URL, TEST_NEW_HANDLE_URL);
 
-		// set new title
-		final String newTitle = "newtitle";
-		handleFieldMap = new HashMap<HandleField, String>();
-		handleFieldMap.put(HandleField.TITLE, newTitle);
-		handleFieldMap.put(HandleField.URL, url);
-		pidwriter.modifyPid(getConfiguration(), pid, handleFieldMap);
+        pidwriter.modifyPid(configuration, pid, handleFieldMap);
+    }
 
-		// check
-		pidObject = resolver.resolvePidAsPOJO(getConfiguration(), pid);
-		final String changedTitle = pidObject.getValue(HandleField.TITLE);
-		assertEquals(newTitle, changedTitle);
+    @Test
+    public void testCustomPIDWriting() throws Exception {
+        stubFor(put(urlEqualTo(String.format("%s/%s/%s", TEST_API_PATH, TEST_HANDLE_PREFIX, TEST_NEW_HANDLE_SUFFIX)))
+                .withBasicAuth(TEST_API_USER, TEST_API_PASSWORD)
+                .withHeader("Accept", containing("application/json"))
+                .withHeader("If-None-Match", containing("*"))
+                .withRequestBody(containing(getJsonHandleField(HandleField.URL, TEST_NEW_HANDLE_URL)))
+                .withRequestBody(containing(getJsonHandleField(HandleField.TITLE, TEST_NEW_HANDLE_TITLE)))
+                .willReturn(aResponse()
+                        .withHeader("Location",
+                                String.format("http://%s:%d%s/%s/%s",
+                                        TEST_HOST, TEST_PORT, TEST_API_PATH, TEST_HANDLE_PREFIX, TEST_NEW_HANDLE_SUFFIX))
+                        .withStatus(201)));
 
-		// set old title again
-		handleFieldMap.put(HandleField.TITLE, oldTitle);
-		handleFieldMap.put(HandleField.URL, url);
-		pidwriter.modifyPid(getConfiguration(), pid, handleFieldMap);
+        // register new PID
+        final Map<HandleField, String> handleFieldMap = new EnumMap<>(HandleField.class);
+        handleFieldMap.put(HandleField.URL, TEST_NEW_HANDLE_URL);
+        handleFieldMap.put(HandleField.TITLE, TEST_NEW_HANDLE_TITLE);
+        final String resultPid = pidwriter.registerNewPID(configuration, handleFieldMap, TEST_NEW_HANDLE_SUFFIX);
+        final String expectedResultPid = configuration.getHandlePrefix() + "/" + TEST_NEW_HANDLE_SUFFIX;
 
-		// check
-		pidObject = resolver.resolvePidAsPOJO(getConfiguration(), pid);
-		title = pidObject.getValue(HandleField.TITLE);
-		assertEquals(title, oldTitle);
-	}
+        // test if requested ID was created
+        assertEquals("Returned PID should equal requested PID", expectedResultPid, resultPid);
+    }
 
-	@Test
-	public void testCustomPIDWriting() throws Exception {
-		final String pid = "TEST-" + UUID.randomUUID().toString();
-		final String url = "http://clarin.eu";
-		final String oldTitle = "CLARIN Website";
+    @Test
+    public void testCustomPIDWritingIllegalPid() throws Exception {
+        final String illegalPid = "This is not a valid PID";
+        final Map<HandleField, String> handleFieldMap = new EnumMap<>(HandleField.class);
 
-		final PidWriter pidwriter = new PidWriterImpl();
-		final PidResolver resolver = new PidResolverImpl();
-
-		// register new PID
-		final Map<HandleField, String> handleFieldMap = new HashMap<>();
-		handleFieldMap.put(HandleField.URL, url);
-		handleFieldMap.put(HandleField.TITLE, oldTitle);
-		final String resultPid = pidwriter.registerNewPID(getConfiguration(), handleFieldMap, pid);
-		final String expectedResultPid = getConfiguration().getHandlePrefix() + "/" + pid;
-
-		// test if requested ID was created
-		assertEquals("Returned PID should equal requested PID", expectedResultPid, resultPid);
-
-		// get title to check if PID has been created
-		final PidObject pidObject = resolver.resolvePidAsPOJO(getConfiguration(), resultPid);
-		final String title = pidObject.getValue(HandleField.TITLE);
-		assertEquals(oldTitle, title);
-
-		// try to register again with same PID
-		try {
-			// the following call should throw an exception
-			pidwriter.registerNewPID(getConfiguration(), handleFieldMap, pid);
-			// we should not get here
-			fail("Service allowed creation of existing PID, this should not be allowed");
-		} catch (HttpException ex) {
-			// this should happen, pass test!
-		}
-	}
-
-	@Test
-	public void testCustomPIDWritingIllegalPid() throws Exception {
-		final String illegalPid = "This is not a valid PID";
-
-		final PidWriter pidwriter = new PidWriterImpl();
-
-		final HashMap<HandleField, String> handleFieldMap = new HashMap<>();
-		handleFieldMap.put(HandleField.URL, "url");
-		handleFieldMap.put(HandleField.TITLE, "title");
-
-		try {
-			// the following call should throw an exception
-			pidwriter.registerNewPID(getConfiguration(), handleFieldMap, illegalPid);
-			// we should not get here
-			fail("Service accepted syntactically invalid PID");
-		} catch (IllegalArgumentException ex) {
-			// this should happen, pass test!
-		}
-	}
+        try {
+            // the following call should throw an exception
+            pidwriter.registerNewPID(configuration, handleFieldMap, illegalPid);
+            // we should not get here
+            fail("Service accepted syntactically invalid PID");
+        } catch (IllegalArgumentException ex) {
+            // this should happen, pass test!
+        }
+    }
 }

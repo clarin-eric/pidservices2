@@ -33,25 +33,28 @@ public interface PidWriter {
 			throws HttpException;
 
 	/**
-	 * Try to register a new PID at handle server. Returns registered handle if successful.
+	 * Try to register a new PID at handle server.Returns registered handle if successful.
 	 * 
 	 * @param configuration
 	 * @param fieldMap
 	 *            handle mapping field to value
 	 * @return registered handle identifier
+     * @throws org.apache.commons.httpclient.HttpException
 	 * @throws HTTPException
 	 */
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws HttpException;
 
 	/**
-	 * Modify existing PID. This method overwrites all existing fields! Fields that should remain stored for the PID have to be added to fieldMap.
+	 * Modify existing PID.This method overwrites all existing fields! Fields that should remain stored for the PID have to be added to fieldMap.
 	 * 
 	 * @param configuration
 	 * @param pid
 	 *            Persistent identifier that will be modified/overwritten
 	 * @param fieldMap
 	 *            new field values: mapping handle field to value
+     * @throws org.apache.commons.httpclient.HttpException
 	 */
-	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap);
+	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap)
+                throws HttpException;
 }
