@@ -62,20 +62,24 @@ public class PidWriterImpl extends AbstractPidClient implements PidWriter {
                         .accept("application/json")
                         .post(Entity.entity(jsonArray.toString(), MediaType.APPLICATION_JSON));
                 
-		return processCreateResponse(response, configuration);
+                return processCreateResponse(response, configuration);
 	}
 
         private String processCreateResponse(final Response response, final Configuration configuration)
 			throws HttpException, RuntimeException {
 		if(response.getStatus() != 201) {
-			throw new HttpException("" + response.getStatus());
+                    LOG.debug("Invalid API respose: code="+response.getStatus()+", message="+response.getStatusInfo().getReasonPhrase());
+                    throw new HttpException("Invalid API response" + response.getStatus());
 		}
 
                 String base = configuration.getServiceBaseURL();
                 if(!base.endsWith("/")) {
                     base += "/";
                 }
-		return response.getLocation().toString().replace(base, "");
+
+                String location = response.getLocation().toString().replace(base, "");
+                LOG.debug("Registered new PID at location: "+location);
+                return location;
 	}
 
 	@Override
@@ -92,7 +96,10 @@ public class PidWriterImpl extends AbstractPidClient implements PidWriter {
                     .put(Entity.entity(jsonArray.toString(), MediaType.APPLICATION_JSON));
                  
                  if(response.getStatus() != 201) {
-                     throw new HttpException("Invalid response: "+response.getStatus());
+                     LOG.debug("Invalid API respose: code="+response.getStatus()+", message="+response.getStatusInfo().getReasonPhrase());
+                     throw new HttpException("Invalid API response: "+response.getStatus());
+                 } else {
+                     LOG.debug("Successfully modified PID: "+pid);
                  }
 	}
 
