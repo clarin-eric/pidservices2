@@ -4,7 +4,7 @@
     <groupId>de.uni_leipzig.asv</groupId>
     <artifactId>clarin.webservices.pidservices2</artifactId>
 
-    <version>4.2-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.groupId}.${project.artifactId}</name>
 
@@ -19,33 +19,15 @@
             <artifactId>json-path</artifactId>
             <version>0.9.1</version>
         </dependency>
-        <!--
-<dependency>
-<groupId>com.sun.jersey.contribs</groupId>
-<artifactId>jersey-apache-client</artifactId>
-<version>1.19.4</version>
-<exclusions>
-<exclusion>
-<groupId>commons-httpclient</groupId>
-<artifactId>commons-httpclient</artifactId>
-</exclusion>
-</exclusions>
-</dependency>
-        -->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
-            <version>2.29.1</version>
+            <version>3.1.8</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
-            <version>2.29.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
+            <version>3.1.8</version>
         </dependency>
                 
         <dependency>
@@ -54,6 +36,8 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        
+        <!-- TODO: can this be replaced by jackson? -->
         <dependency>
             <groupId>net.sf.json-lib</groupId>
             <artifactId>json-lib</artifactId>
@@ -92,13 +76,6 @@
             <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>jaxws-ri</artifactId>
-            <version>2.3.2</version>
-            <type>pom</type>
-        </dependency>
-        
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
@@ -165,7 +142,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.1.1</version>
@@ -182,7 +159,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
                                             
         </plugins>
     </build>

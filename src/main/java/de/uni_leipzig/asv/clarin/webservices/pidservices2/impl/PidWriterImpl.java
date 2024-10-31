@@ -3,18 +3,16 @@ package de.uni_leipzig.asv.clarin.webservices.pidservices2.impl;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
+import de.uni_leipzig.asv.clarin.webservices.pidservices2.PidApiException;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -31,7 +29,7 @@ public class PidWriterImpl extends AbstractPidClient implements PidWriter {
 
 	@Override
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String suffix)
-			throws HttpException, IllegalArgumentException {
+			throws PidApiException, IllegalArgumentException {
 		LOG.debug("Try to create handle {} at {} with values: {}", suffix, configuration.getServiceBaseURL(), fieldMap);
 
 		// validate the requested PID
@@ -52,7 +50,7 @@ public class PidWriterImpl extends AbstractPidClient implements PidWriter {
 
 	@Override
 	public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap)
-			throws HttpException {
+			throws PidApiException {
 		LOG.debug("Try to create handle at {} with values: {}", configuration.getServiceBaseURL(), fieldMap);
 
                 final WebTarget webTarget = getWebtarget(configuration,configuration.getHandlePrefix()); 
@@ -66,10 +64,10 @@ public class PidWriterImpl extends AbstractPidClient implements PidWriter {
 	}
 
         private String processCreateResponse(final Response response, final Configuration configuration)
-			throws HttpException, RuntimeException {
+			throws PidApiException, RuntimeException {
 		if(response.getStatus() != 201) {
                     LOG.debug("Invalid API respose: code="+response.getStatus()+", message="+response.getStatusInfo().getReasonPhrase());
-                    throw new HttpException("Invalid API response" + response.getStatus());
+                    throw new PidApiException("Invalid API response" + response.getStatus());
 		}
 
                 String base = configuration.getServiceBaseURL();
@@ -84,7 +82,7 @@ public class PidWriterImpl extends AbstractPidClient implements PidWriter {
 
 	@Override
 	public void modifyPid(final Configuration configuration, final String pid, Map<HandleField, String> fieldMap) 
-            throws HttpException {
+            throws PidApiException {
 		LOG.debug("Try to modify handle \"" + pid + "\" at " + configuration.getServiceBaseURL() + " with new values: "
 				+ fieldMap);
 
@@ -97,7 +95,7 @@ public class PidWriterImpl extends AbstractPidClient implements PidWriter {
                  
                  if(response.getStatus() != 201) {
                      LOG.debug("Invalid API respose: code="+response.getStatus()+", message="+response.getStatusInfo().getReasonPhrase());
-                     throw new HttpException("Invalid API response: "+response.getStatus());
+                     throw new PidApiException("Invalid API response: "+response.getStatus());
                  } else {
                      LOG.debug("Successfully modified PID: "+pid);
                  }

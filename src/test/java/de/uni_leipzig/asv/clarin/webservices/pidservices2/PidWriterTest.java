@@ -36,7 +36,7 @@ public class PidWriterTest extends AbstractTest {
     }
 
     @Test
-    public void testPIDWriting() throws IOException {
+    public void testPIDWriting() throws IOException, PidApiException {
         stubFor(put(urlEqualTo(String.format("%s/%s/%s", TEST_API_PATH, TEST_HANDLE_PREFIX, TEST_NEW_HANDLE_SUFFIX)))
                 .withBasicAuth(TEST_API_USER, TEST_API_PASSWORD)
                 .withHeader("Accept", containing("application/json"))
